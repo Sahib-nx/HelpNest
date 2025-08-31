@@ -16,8 +16,7 @@ const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
     email: z.string().email("Invalid email address"),
 });
-//just for test dont freak out!!
-const organizationId = "123";
+
 
 export const WidgetAuthSCreen = () => {
     const organizationId = useAtomValue(organizationIdAtom);
