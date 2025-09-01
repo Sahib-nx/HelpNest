@@ -16,8 +16,8 @@ export const InfiniteScrollTrigger = ({
     canLoadMore,
     isLoadingMore,
     onLoadMore,
-    loadMoreText = "Load more",
-    noMoreText = "No more items",
+    loadMoreText = "Load more messages",
+    noMoreText = "No more messages",
     className,
     ref,
 }: InfiniteScrollTriggerProps) => {

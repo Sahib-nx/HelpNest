@@ -79,7 +79,7 @@ export const WidgetChatScreen = () => {
     const {topElementRef, handleLoadMore, canLoadMore, isLoadingMore} = useInfiniteScroll({
         status: messages.status,
         loadMore: messages.loadMore,
-        loadSize: 10
+        loadSize: 10,
     });
 
 
@@ -144,10 +144,9 @@ export const WidgetChatScreen = () => {
                                 </AIMessageContent>
                                 {message.role === "assistant" && (
                                     <DicebarAvatar 
-                                    // imageUrl="/logo.svg"
+                                    imageUrl="/logo2.svg"
                                     seed="assistant"
                                     size={32}
-                                    badgeImageUrl="/logo.svg"
                                     />
                                 )}
                             </AIMessage>
