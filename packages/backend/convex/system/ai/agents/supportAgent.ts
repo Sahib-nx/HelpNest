@@ -4,5 +4,6 @@ import { components } from "../../../_generated/api";
 
 export const supportAgent = new Agent(components.agent, {
     chat: openai.chat("gpt-4o-mini"),
-    instructions: "You are a customer support agent"
+    instructions: `You are a customer support agent. Use "resolveConversation" tool when user expresses finalization of the conversation. Use "escalatedConversation" tool when user expresses frustation, or requests a human explicitly.`,
+
 });
