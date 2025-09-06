@@ -5,6 +5,60 @@ import { MessageDoc } from "@convex-dev/agent";
 import { paginationOptsValidator, PaginationResult } from "convex/server";
 import { Doc } from "../_generated/dataModel.js";
 
+export const getOne = query({
+    args: {
+        conversationId: v.id("conversations"),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+
+        if (identity === null) {
+            throw new ConvexError({
+                code: "UNAUTHORIZED",
+                message: "Identity not found!"
+            });
+        };
+
+        const orgId = identity.orgId as string;
+
+        if (!orgId) {
+            throw new ConvexError({
+                code: "UNAUTHORIZED",
+                message: "Organization not found!"
+            });
+        };
+
+        const conversation = await ctx.db.get(args.conversationId);
+
+        if (!conversation) {
+            throw new ConvexError({
+                code: "NOT_FOUND",
+                message: "Conversation not found!"
+            });
+        };
+
+        if (conversation.organizationId !== orgId) {
+            throw new ConvexError({
+                code: "UNAUTHORIZED",
+                message: "Invalid Organization ID"
+            });
+        };
+
+        const contactSession = await ctx.db.get(conversation.contactSessionId);
+
+        if (!contactSession) {                  //There is a bit confusion if it willl work or not !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            throw new ConvexError({
+                code: "NOT_FOUND",
+                message: "ContactSession not found!"
+            });
+        };
+
+        return {
+            ...conversation,
+            contactSession,
+        };
+    },
+})
 export const getMnay = query({
     args: {
         paginationOpts: paginationOptsValidator,
@@ -61,18 +115,18 @@ export const getMnay = query({
         const conversationsWithAdditionalData = await Promise.all(
             conversations.page.map(async (conversation) => {
                 let lastMessage: MessageDoc | null = null;
-                
+
                 const contactSession = await ctx.db.get(conversation.contactSessionId);
-                if(!contactSession) {
+                if (!contactSession) {
                     return null;
                 };
 
                 const messages = await supportAgent.listMessages(ctx, {
                     threadId: conversation.threadId,
-                    paginationOpts: { numItems: 1, cursor: null}
+                    paginationOpts: { numItems: 1, cursor: null }
                 });
 
-                if(messages.page.length > 0) {
+                if (messages.page.length > 0) {
                     lastMessage = messages.page[0] ?? null;
                 };
 
