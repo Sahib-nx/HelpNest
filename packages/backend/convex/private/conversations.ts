@@ -1,9 +1,63 @@
 import { ConvexError, v } from "convex/values";
-import { query } from "../_generated/server.js";
+import { mutation, query } from "../_generated/server.js";
 import { supportAgent } from "../system/ai/agents/supportAgent.js";
 import { MessageDoc } from "@convex-dev/agent";
 import { paginationOptsValidator, PaginationResult } from "convex/server";
 import { Doc } from "../_generated/dataModel.js";
+
+
+export const updatedStatus = mutation({
+    args: {
+        conversationId: v.id("conversations"),
+        status: v.union(
+            v.literal("unresolved"),
+            v.literal("escalated"),
+            v.literal("resolved")
+        ),
+    },
+        handler: async (ctx, args) => {
+            const identity = await ctx.auth.getUserIdentity();
+
+            if (identity === null) {
+                throw new ConvexError({
+                    code: "UNAUTHORIZED",
+                    message: "Identity not found!"
+                });
+            };
+
+            const orgId = identity.orgId as string;
+
+            if (!orgId) {
+                throw new ConvexError({
+                    code: "UNAUTHORIZED",
+                    message: "Organization not found!"
+                });
+            };
+
+            const conversation = await ctx.db.get(args.conversationId);
+
+            if (!conversation) {
+                throw new ConvexError({
+                    code: "NOT_FOUND",
+                    message: "Conversation not found!"
+                });
+            };
+
+
+            if (conversation.organizationId !== orgId) {
+                throw new ConvexError({
+                    code: "UNAUTHORIZED",
+                    message: "Invalid Organization ID"
+                });
+            };
+
+            await ctx.db.patch(args.conversationId, {
+                status: args.status,
+            });
+
+        },
+    }
+)
 
 export const getOne = query({
     args: {
@@ -46,7 +100,7 @@ export const getOne = query({
 
         const contactSession = await ctx.db.get(conversation.contactSessionId);
 
-        if (!contactSession) {                  //There is a bit confusion if it willl work or not !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if (!contactSession) {
             throw new ConvexError({
                 code: "NOT_FOUND",
                 message: "ContactSession not found!"
