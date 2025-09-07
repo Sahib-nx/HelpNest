@@ -94,8 +94,14 @@ export const craete = mutation({
                 code: "BAD_REQUEST",
                 message: "Conversation resolved!"
             });
-        }
+        };
 
+        if(conversation.status === "unresolved") {
+            await ctx.db.patch(args.conversationId, {
+                status: "escalated"
+            });
+        };
+ 
 
         await saveMessage(ctx, components.agent, {
             threadId: conversation.threadId,
