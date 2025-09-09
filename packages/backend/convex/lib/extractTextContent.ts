@@ -109,7 +109,7 @@ async function extractPdfText(
                         type: "text",
                         text: "Extract the text from the PDF and print it without explaining you will do so.",
                     }
-                ] as any//It will cause some problems i think but lets see!!
+                ] as any //It will cause some problems i think but lets see..it's just to satisfy tyscript there is a version mismatch error!!
             }
         ]
     });
