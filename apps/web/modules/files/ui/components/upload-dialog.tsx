@@ -9,11 +9,11 @@ import { api } from "@workspace/backend/_generated/api";
 import { useState } from "react";
 import { Button } from "@workspace/ui/components/button";
 
-interface UploadDialogProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    onFileUploaded?: () => void;
-};
+                            interface UploadDialogProps {
+                                open: boolean;
+                                onOpenChange: (open: boolean) => void;
+                                onFileUploaded?: () => void;
+                            };
 
 export const UploadDialog = ({
     open,
